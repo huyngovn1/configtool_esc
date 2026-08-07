@@ -81,7 +81,7 @@ Widget::Widget(QWidget *parent)
   ui->setupUi(this);
   //ui->tabWidget->removeTab(4); // todo make these visible
   ui->tabWidget->removeTab(5);   // remove led tab for now
-  this->setWindowTitle("ESC Config Tool 1.95 - for firmware version 2.19 and higher");
+  this->setWindowTitle("ESC Config Tool ");
   installWebSkin();
 
   serialInfoStuff();
@@ -214,9 +214,9 @@ void Widget::installWebSkin() {
     QProgressBar::chunk { background: #2563eb; border-radius: 5px; }
   )"));
 
-  makeLabel(ui->frame_2, "webLogo", "VP");
-  makeLabel(ui->frame_2, "webKicker", "VPTEK", "brandKicker");
-  makeLabel(ui->frame_2, "webTitle", "VPTEK ESC Control Center", "brandTitle");
+  makeLabel(ui->frame_2, "webLogo", "QH");
+  makeLabel(ui->frame_2, "webKicker", "NQHUY", "brandKicker");
+  makeLabel(ui->frame_2, "webTitle", "NHQH ESC Control Center", "brandTitle");
   makeLabel(ui->frame_2, "webSubtitle", "ESC configuration and firmware management", "brandSubtitle");
   ui->ConnectedButton->setText("DEVICE   Not connected");
   connect(ui->ConnectedButton, &QRadioButton::toggled, this,
