@@ -13,7 +13,9 @@ An ESC configuration application for AT32F421K8U7 firmware. The tool connects th
 
 ## Interface
 
-<img width="999" height="833" alt="Config Tool AT32F421K8U7 interface" src="https://github.com/user-attachments/assets/6013288e-c6e2-42b6-a0bc-df5ad1e68757" />
+<img width="998" height="830" alt="image" src="https://github.com/user-attachments/assets/4cd26aa7-4f80-4340-8fe5-8a3bc2a5c979" />
+
+
 
 ## Getting Started
 
