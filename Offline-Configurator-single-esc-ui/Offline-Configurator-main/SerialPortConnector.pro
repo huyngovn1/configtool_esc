@@ -3,7 +3,7 @@ QT += widgets
 QT += serialport
 
 CONFIG += c++11
-
+TARGET = ESC_Control_Center
 CONFIG += release
 
 CONFIG(release, debug|release) {
