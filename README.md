@@ -1,6 +1,6 @@
-# Config Tool am32
+# Config Tool 
 
-An ESC configuration application for AT32F421K8U7 firmware. The tool connects through USB/Serial to read, modify, and save ESC settings.
+An ESC configuration application for AT or STM firmware. The tool connects through USB/Serial to read, modify, and save ESC settings.
 
 ## Features
 
