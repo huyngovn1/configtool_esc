@@ -14,8 +14,7 @@ public:
     // Address is already in the target's wire units. No implicit /4 conversion.
     // Length must be 1..256 (or 0 meaning 256) and match the write payload.
     // Invalid lengths/payloads return an empty array.
-    QByteArray makeFourWayWriteCommand(const QByteArray sendbuffer, int buffer_size,
-                                      uint16_t address);
+    QByteArray makeFourWayWriteCommand(const QByteArray sendbuffer, int buffer_size,uint16_t address);
     QByteArray makeFourWayReadCommand(int buffer_size, uint16_t address);
     QByteArray makeFourWayReadEEPROMCommand(int buffer_size, uint16_t address);
     QByteArray makeFourWayCommand(uint8_t cmd, uint8_t device_num);

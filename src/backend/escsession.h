@@ -23,7 +23,7 @@ public slots:
     void disconnectDevice();
     void readSettings();
     void writeSettings(QByteArray settings);
-
+void flashFirmware(QByteArray firmware, quint32 physicalStart);
 signals:
     void busyChanged(bool busy);
     void connectedChanged(bool connected);
@@ -31,21 +31,25 @@ signals:
     void deviceInfo(QString firmware, QString chip, quint32 eepromAddress);
     void settingsRead(QByteArray settings);
     void writeFinished(bool success, QString message);
+    void firmwareProgress(int percent, QString message);
+    void firmwareFinished(bool success, QString message);
     void errorOccurred(QString message);
 
 private:
     bool sendPacket(const QByteArray &packet, QString &error);
     bool receiveMore(QByteArray &buffer, int timeoutMs, QString &error);
     bool exchangeMsp(quint8 command, QByteArray &payload, QString &error);
-    bool exchangeFourWay(const QByteArray &request, QByteArray &payload,
-                         QString &error, int timeoutMs = 1500);
-    bool exchangeDirect(const QByteArray &request, int replySize,
-                        QByteArray &reply, QString &error, int timeoutMs = 1500);
+    bool exchangeFourWay(const QByteArray &request, QByteArray &payload,QString &error, int timeoutMs = 1500);
+    bool exchangeDirect(const QByteArray &request, int replySize,QByteArray &reply, QString &error, int timeoutMs = 1500);
     bool startDirect(QString &error);
     bool startFourWay(int channel, QString &error);
     bool selectProfile(quint8 flashCode, QString &error);
     bool fetchSettings(QByteArray &settings, QString &error);
     bool writeDirect(const QByteArray &settings, QString &error);
+    bool writeMemory(quint32 physicalAddress,const QByteArray &data,QString &error);
+    bool readMemory(quint32 physicalAddress,int size,QByteArray &data,QString &error);
+    bool physicalToWireAddress(quint32 physicalAddress,quint16 &wireAddress,QString &error) const;
+    bool validateFirmware(const QByteArray &firmware,quint32 physicalStart,QString &error) const;
     bool prepareDirectBuffer(int size, QString &error);
     bool validateWrite(const QByteArray &settings, QString &error) const;
     void setBusy(bool busy);
@@ -62,6 +66,8 @@ private:
     int m_mode = 0;
     quint16 m_eepromAddress = 0;
     quint8 m_addressShift = 0;
+    quint32 m_firmwareStart = 0;
+    int m_channel = 0;
     QString m_chip;
     QString m_firmware;
     QByteArray m_originalSettings;

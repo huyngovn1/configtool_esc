@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "backend/escsession.h"
+#include "../intelhex.h"
 #include <QCloseEvent>
 #include <QDateTime>
 #include <QFileDialog>
@@ -9,7 +10,8 @@
 #include <QSaveFile>
 #include <QSerialPortInfo>
 #include <QStatusBar>
-
+#include <QFile>
+#include <QDir>
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), m_session(new EscSession)
 {
@@ -57,8 +59,23 @@ MainWindow::MainWindow(QWidget *parent)
         appendLog(message);
         updateControls();
     });
-    m_workerThread.start();
+    connect(m_session,&EscSession::firmwareProgress,this,[this](int percent, const QString &message) {
+            ui->firmwareProgressBar->setValue(percent);
+            ui->firmwareStatusLabel->setText(message);
+            setStatus(message);
+        });
 
+    connect(m_session,&EscSession::firmwareFinished,this,
+        [this](bool success, const QString &message) {
+            ui->firmwareStatusLabel->setText(message);
+            if (!success)ui->firmwareProgressBar->setValue(0);
+            appendLog(message);
+            setStatus(message);
+            updateControls();
+        });
+    m_workerThread.start();
+    connect(ui->selectFirmwareButton, &QPushButton::clicked, this, &MainWindow::selectFirmware);
+    connect(ui->flashFirmwareButton,&QPushButton::clicked,this,&MainWindow::flashFirmware);
     connect(ui->refreshButton, &QPushButton::clicked, this, &MainWindow::refreshPorts);
     connect(ui->connectButton, &QPushButton::clicked, this, &MainWindow::toggleConnection);
     connect(ui->demoButton, &QPushButton::clicked, this, &MainWindow::toggleDemo);
@@ -87,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent)
             [this](bool value) { editValue(19, value); });
     refreshPorts();
     setStatus(tr("Sẵn sàng. Chọn cổng COM hoặc xem thử giao diện."));
-    appendLog(tr("Basic ESC Config 0.1 — giao diện và dự án riêng."));
+    appendLog(tr(" ESC Config 0.1 ."));
 }
 
 MainWindow::~MainWindow()
@@ -257,7 +274,103 @@ void MainWindow::writeSettings()
     QMetaObject::invokeMethod(m_session, "writeSettings", Qt::QueuedConnection,
         Q_ARG(QByteArray, m_model.bytes()));
 }
+void MainWindow::selectFirmware()
+{
+    const QString path =
+        QFileDialog::getOpenFileName(this,tr("Chọn firmware "),QString(),tr("Intel HEX (*.hex);;Tất cả file (*.*)"));
+    if (path.isEmpty())
+        return;
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly)) {QMessageBox::warning(this,tr("Không thể mở firmware"),file.errorString());
+        return;
+    }
 
+    const QByteArray hexText = file.readAll();
+    file.close();
+    IntelHex hex;
+    QString error;
+
+    if (!hex.load(hexText, &error)) {
+        m_firmwareHexText.clear();
+        m_firmwarePath.clear();
+        ui->firmwarePathEdit->clear();
+        ui->firmwareInfoLabel->setText(tr("File HEX không hợp lệ"));
+        ui->firmwareStatusLabel->setText(error);
+        ui->firmwareProgressBar->setValue(0);
+        ui->flashFirmwareButton->setEnabled(false);
+        appendLog(tr("Không đọc được firmware: %1").arg(error));
+        QMessageBox::warning(this,tr("HEX không hợp lệ"),error);
+        return;
+    }
+
+    m_firmwareHexText = hexText;
+    m_firmwarePath = path;
+    const QString firstAddress =QStringLiteral("0x%1").arg(hex.lowestAddress(),8,16,QLatin1Char('0')).toUpper();
+    const QString lastAddress =QStringLiteral("0x%1").arg(hex.highestAddress(),8,16,QLatin1Char('0')).toUpper();
+    ui->firmwarePathEdit->setText(QDir::toNativeSeparators(path));
+    ui->firmwareInfoLabel->setText(tr("Dữ liệu: %1 byte | Địa chỉ: %2 → %3").arg(hex.memory().size()).arg(firstAddress).arg(lastAddress));
+    ui->firmwareStatusLabel->setText(tr("File HEX hợp lệ"));
+    ui->firmwareProgressBar->setValue(0);
+    ui->flashFirmwareButton->setEnabled(m_connected && !m_busy);
+    appendLog(tr("Đã đọc firmware HEX: %1 byte, %2 → %3").arg(hex.memory().size()).arg(firstAddress).arg(lastAddress));
+}
+void MainWindow::flashFirmware()
+{
+    if (m_busy || !m_connected)
+        return;
+    if (m_firmwareHexText.isEmpty()) {QMessageBox::warning(this,tr("Chưa chọn firmware"),tr("Hãy chọn một file HEX hợp lệ."));
+        return;
+    }
+
+    IntelHex hex;
+    QString error;
+    if (!hex.load(m_firmwareHexText, &error)) {
+        QMessageBox::warning(this,tr("HEX không hợp lệ"),error);
+        return;
+    }
+    const quint32 sourceStart =
+        hex.lowestAddress();
+
+    const quint32 sourceEnd =hex.highestAddress();
+    quint32 physicalStart = sourceStart;
+    // File STM32 HEX thường dùng địa chỉ 0x08000000.
+    if (sourceStart >= 0x08000000u && sourceEnd < 0x09000000u) {
+        physicalStart = sourceStart - 0x08000000u;
+    } else if (sourceStart >= 0x01000000u) {
+        QMessageBox::warning(this,tr("Địa chỉ HEX không hỗ trợ"),tr("Không nhận dạng được vùng địa chỉ của file HEX."));
+        return;
+    }
+    const quint64 imageLength64 =quint64(sourceEnd)- quint64(sourceStart)+ 1u;
+    if (imageLength64 == 0|| imageLength64 > 1024u * 1024u) {
+        QMessageBox::warning(this,tr("Firmware không hợp lệ"),tr("Kích thước vùng firmware không hợp lệ."));
+        return;
+    }
+
+    const QByteArray firmware =hex.range(sourceStart,quint32(imageLength64),0xff);
+
+    const auto answer =QMessageBox::question(this,tr("Xác nhận nạp firmware"),tr("Sẽ ghi %1 byte từ địa chỉ 0x%2.\n""Không ngắt nguồn hoặc cáp USB trong khi nạp.\n\n""Bắt đầu nạp?").arg(firmware.size()).arg(physicalStart,0,16),QMessageBox::Yes| QMessageBox::No,QMessageBox::No);
+    if (answer != QMessageBox::Yes)
+        return;
+
+    m_busy = true;
+    updateControls();
+
+    ui->firmwareProgressBar->setValue(0);
+    ui->firmwareStatusLabel->setText(
+        tr("Đang chuẩn bị nạp firmware..."));
+
+    appendLog(
+        tr("Bắt đầu nạp %1 byte tại địa chỉ 0x%2.")
+            .arg(firmware.size())
+            .arg(physicalStart, 0, 16));
+
+    QMetaObject::invokeMethod(
+        m_session,
+        "flashFirmware",
+        Qt::QueuedConnection,
+        Q_ARG(QByteArray, firmware),
+        Q_ARG(quint32, physicalStart));
+}
 void MainWindow::exportBackup()
 {
     if (m_loaded.size() != 48)
@@ -304,16 +417,17 @@ void MainWindow::updateControls()
         : (m_connected ? tr("Ngắt kết nối") : tr("Kết nối")));
     ui->demoButton->setEnabled(!m_connected && !m_busy);
     ui->demoButton->setText(m_demo ? tr("Thoát xem thử") : tr("Xem thử giao diện"));
-    ui->settingsPanel->setEnabled(editable);
+    ui->motorGroup->setEnabled(editable);
+    ui->behaviorGroup->setEnabled(editable);
     ui->readButton->setEnabled(!m_busy && (m_connected || m_demo));
     ui->readButton->setText(m_demo ? tr("Nạp lại mẫu") : tr("Đọc ESC"));
     ui->revertButton->setEnabled(editable && m_dirty);
     ui->exportButton->setEnabled(!m_busy && m_loaded.size() == 48);
     ui->writeButton->setEnabled(editable && m_dirty);
     ui->writeButton->setText(m_demo ? tr("Áp dụng bản thử") : tr("Ghi ESC"));
-    ui->dirtyLabel->setText(m_loaded.isEmpty() ? tr("Chưa có dữ liệu")
-        : (m_dirty ? tr("Có thay đổi chưa ghi")
-        : (m_demo ? tr("Dữ liệu mẫu") : tr("Khớp bản đã đọc"))));
+    ui->dirtyLabel->setText(m_loaded.isEmpty() ? tr("Chưa có dữ liệu"): (m_dirty ? tr("Có thay đổi chưa ghi"): (m_demo ? tr("Dữ liệu mẫu") : tr("Khớp bản đã đọc"))));
+    ui->selectFirmwareButton->setEnabled(!m_busy);
+    ui->flashFirmwareButton->setEnabled(!m_busy&& m_connected&& !m_firmwareHexText.isEmpty());
 }
 
 void MainWindow::appendLog(const QString &message)

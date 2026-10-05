@@ -4,12 +4,14 @@ TEMPLATE = app
 TARGET = BasicEscConfig
 INCLUDEPATH += src
 SOURCES += src/main.cpp \
+    intelhex.cpp \
     src/mainwindow.cpp \
     src/backend/escsession.cpp \
     src/model/settingsmodel.cpp \
     src/protocol/BF_ROOTLOADER.cpp \
     src/protocol/fourwayif.cpp
 HEADERS += src/mainwindow.h \
+    intelhex.h \
     src/backend/escsession.h \
     src/backend/serialframes.h \
     src/backend/memoryaddress.h \

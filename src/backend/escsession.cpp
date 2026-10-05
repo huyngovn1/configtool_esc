@@ -217,8 +217,7 @@ bool EscSession::exchangeFourWay(const QByteArray &request, QByteArray &payload,
     return false;
 }
 
-bool EscSession::exchangeDirect(const QByteArray &request, int replySize,
-                                QByteArray &reply, QString &error, int timeoutMs)
+bool EscSession::exchangeDirect(const QByteArray &request, int replySize,QByteArray &reply, QString &error, int timeoutMs)
 {
     if (!sendPacket(request, error))
         return false;
@@ -255,6 +254,7 @@ bool EscSession::exchangeDirect(const QByteArray &request, int replySize,
 bool EscSession::selectProfile(quint8 flashCode, QString &error)
 {
     m_addressShift = 0;
+    m_firmwareStart = 0x1000;
     switch (flashCode) {
     case 0x2b:
         m_chip = QStringLiteral("G071 / flash code 0x2B");
@@ -270,15 +270,16 @@ bool EscSession::selectProfile(quint8 flashCode, QString &error)
         m_eepromAddress = 0xf800;
         break;
     case 0x15:
+
         if (m_mode != 0) {
             m_chip = QStringLiteral("NXP / flash code 0x15");
             m_eepromAddress = 0xe000;
+            m_firmwareStart = 0x4000;
             break;
         }
         Q_FALLTHROUGH();
     default:
-        error = QStringLiteral("Unsupported ESC flash code %1; EEPROM access was not attempted.")
-                    .arg(hexByte(flashCode));
+        error = QStringLiteral("Unsupported ESC flash code %1; EEPROM access was not attempted.").arg(hexByte(flashCode));
         return false;
     }
     return true;
@@ -311,8 +312,7 @@ bool EscSession::startDirect(QString &error)
             return false;
         }
         m_directEcho = echo;
-        emit logMessage(echo ? QStringLiteral("Direct adapter uses local echo.")
-                             : QStringLiteral("Direct adapter has no local echo."));
+        emit logMessage(echo ? QStringLiteral("Direct adapter uses local echo."): QStringLiteral("Direct adapter has no local echo."));
         return selectProfile(quint8(received.at(offset + 4)), error);
     }
     error = timeoutError(QStringLiteral("Bootloader initialization"), received.size());
@@ -361,8 +361,7 @@ bool EscSession::fetchSettings(QByteArray &settings, QString &error)
             return false;
     }
     if (block.size() != ReadSize) {
-        error = QStringLiteral("Expected 80 bytes of firmware identity and settings; received %1.")
-                    .arg(block.size());
+        error = QStringLiteral("Expected 80 bytes of firmware identity and settings; received %1.").arg(block.size());
         return false;
     }
     QByteArray name = block.left(15);
@@ -387,6 +386,7 @@ void EscSession::connectDevice(QString port, int mode, int channel)
     if (m_busy)
         return;
     setBusy(true);
+    m_channel = channel;
     closePort();
     if (mode < 0 || mode > 2 || channel < 0 || channel > 7 || port.trimmed().isEmpty()) {
         failAndClose(QStringLiteral("Select a serial port, connection mode, and ESC channel 1-8."));
@@ -409,8 +409,7 @@ void EscSession::connectDevice(QString port, int mode, int channel)
         setBusy(false);
         return;
     }
-    emit logMessage(QStringLiteral("Opened %1 at %2 baud; initializing ESC channel %3.")
-                        .arg(port).arg(m_serial->baudRate()).arg(channel + 1));
+    emit logMessage(QStringLiteral("Opened %1 at %2 baud; initializing ESC channel %3.").arg(port).arg(m_serial->baudRate()).arg(channel + 1));
     const bool initialized = mode == 0 ? startDirect(error) : startFourWay(channel, error);
     QByteArray settings;
     if (!initialized || !fetchSettings(settings, error)) {
@@ -513,12 +512,8 @@ bool EscSession::prepareDirectBuffer(int size, QString &error)
 bool EscSession::writeDirect(const QByteArray &settings, QString &error)
 {
     QByteArray reply;
-    return exchangeDirect(m_rootloader.setAddress(m_eepromAddress), 1, reply, error)
-        && prepareDirectBuffer(settings.size(), error)
-        && exchangeDirect(m_rootloader.sendBuffer(settings), 1, reply, error)
-        && exchangeDirect(m_rootloader.writeFlash(), 1, reply, error, 2500);
+    return exchangeDirect(m_rootloader.setAddress(m_eepromAddress), 1, reply, error)&& prepareDirectBuffer(settings.size(), error)&& exchangeDirect(m_rootloader.sendBuffer(settings), 1, reply, error)&& exchangeDirect(m_rootloader.writeFlash(), 1, reply, error, 2500);
 }
-
 void EscSession::writeSettings(QByteArray settings)
 {
     if (m_busy)
@@ -533,16 +528,13 @@ void EscSession::writeSettings(QByteArray settings)
     }
     emit logMessage(QStringLiteral("Writing 48 settings bytes; a fresh read must match before success."));
     QByteArray ignored;
-    const bool written = m_mode == 0 ? writeDirect(settings, error)
-        : exchangeFourWay(m_fourway.makeFourWayWriteCommand(settings, SettingsSize,
-                                                            m_eepromAddress), ignored, error, 2500);
+    const bool written = m_mode == 0 ? writeDirect(settings, error): exchangeFourWay(m_fourway.makeFourWayWriteCommand(settings, SettingsSize,m_eepromAddress), ignored, error, 2500);
     // Once a write has been attempted, no previous snapshot remains valid.
     m_originalSettings.clear();
     QByteArray verified;
     const bool readBack = written && fetchSettings(verified, error);
     if (!readBack || verified != settings) {
-        if (readBack)
-            error = QStringLiteral("Read-back mismatch; settings were not confirmed. Reconnect and read before trying again.");
+        if (readBack) error = QStringLiteral("Read-back mismatch; settings were not confirmed. Reconnect and read before trying again.");
         const QString message = QStringLiteral("Save could not be verified: %1").arg(error);
         failAndClose(message);
         emit writeFinished(false, message);
@@ -552,5 +544,203 @@ void EscSession::writeSettings(QByteArray settings)
         emit writeFinished(true, QStringLiteral("Settings saved and verified by read-back."));
         emit logMessage(QStringLiteral("Settings saved; all 48 bytes match the read-back."));
     }
+    setBusy(false);
+}
+bool EscSession::physicalToWireAddress(
+    quint32 physicalAddress,
+    quint16 &wireAddress,
+    QString &error) const
+{
+    const quint32 alignment = quint32(1) << m_addressShift;
+    if ((physicalAddress % alignment) != 0) {
+        error = QStringLiteral("Địa chỉ 0x%1 không đúng căn chỉnh của chip.").arg(physicalAddress, 0, 16);
+        return false;
+    }
+    const quint32 converted =physicalAddress >> m_addressShift;
+    if (converted > 0xffffu) {
+        error = QStringLiteral(
+        "Địa chỉ firmware vượt giới hạn bootloader.");
+        return false;
+    }
+    wireAddress = quint16(converted);
+    return true;
+}
+bool EscSession::writeMemory(quint32 physicalAddress,const QByteArray &data,QString &error)
+{
+    if (data.isEmpty() || data.size() > 256) {
+        error = QStringLiteral("Kích thước khối ghi phải từ 1 đến 256 byte.");
+        return false;
+    }
+    quint16 wireAddress = 0;
+    if (!physicalToWireAddress(physicalAddress,wireAddress,error)) {
+        return false;
+    }
+    if (m_mode == 0) {
+        QByteArray reply;
+        return exchangeDirect(m_rootloader.setAddress(wireAddress),1,reply,error)&& prepareDirectBuffer(data.size(), error)&& exchangeDirect(m_rootloader.sendBuffer(data),1,reply,error)&& exchangeDirect(m_rootloader.writeFlash(),1,reply,error,2500);
+    }
+    QByteArray reply;
+    return exchangeFourWay(m_fourway.makeFourWayWriteCommand(data,data.size(),wireAddress),reply,error,2500);
+}
+
+bool EscSession::readMemory(quint32 physicalAddress,int size,QByteArray &data,QString &error)
+{
+    if (size < 1 || size > 256) {
+        error = QStringLiteral("Kích thước khối đọc phải từ 1 đến 256 byte.");
+        return false;
+    }
+    quint16 wireAddress = 0;
+    if (!physicalToWireAddress(physicalAddress,wireAddress,error)) {
+        return false;
+    }
+    if (m_mode == 0) {
+        QByteArray reply;
+        const quint8 encodedSize =size == 256 ? 0 : quint8(size);
+        if (!exchangeDirect(m_rootloader.setAddress(wireAddress),1,reply,error)|| !exchangeDirect(m_rootloader.readFlash(encodedSize),size + 3,reply,error)) {
+            return false;
+        }
+        data = reply.left(size);
+    } else {
+        if (!exchangeFourWay(m_fourway.makeFourWayReadCommand(size,wireAddress),data,error)) {
+            return false;
+        }
+    }
+    if (data.size() != size) {
+        error = QStringLiteral("Đọc lại sai kích thước: cần %1 byte, nhận %2 byte.").arg(size).arg(data.size());
+        return false;
+    }
+    return true;
+}
+bool EscSession::validateFirmware(
+    const QByteArray &firmware,
+    quint32 physicalStart,
+    QString &error) const
+{
+    if (!m_connected) {
+        error = QStringLiteral("ESC chưa được kết nối.");
+        return false;
+    }
+    if (m_originalSettings.size() != SettingsSize) {
+        error = QStringLiteral(
+            "Chưa có bản sao 48 byte EEPROM.");
+        return false;
+    }
+    if (firmware.isEmpty()) {
+        error = QStringLiteral("Firmware không có dữ liệu.");
+        return false;
+    }
+    if (physicalStart != m_firmwareStart) {
+        error = QStringLiteral("Firmware bắt đầu tại 0x%1, nhưng chip này cần bắt đầu tại 0x%2. ""Có thể bạn đã chọn file FULL chứa bootloader.").arg(physicalStart, 0, 16).arg(m_firmwareStart, 0, 16);
+        return false;
+    }
+    const quint32 eepromPhysical =quint32(m_eepromAddress) << m_addressShift;
+    const quint64 firmwareEnd =quint64(physicalStart)+ quint64(firmware.size());
+    if (firmwareEnd > quint64(eepromPhysical)) {
+        error = QStringLiteral("Firmware chạm vào vùng EEPROM tại 0x%1.").arg(eepromPhysical, 0, 16);
+        return false;
+    }
+    return true;
+}
+
+void EscSession::flashFirmware(
+    QByteArray firmware,
+    quint32 physicalStart)
+{
+    if (m_busy)
+        return;
+    setBusy(true);
+    QString error;
+
+    if (!validateFirmware(firmware,physicalStart,error)) {
+        emit firmwareFinished(false, error);
+        setBusy(false);
+        return;
+    }
+    const quint32 eepromPhysical =
+    quint32(m_eepromAddress) << m_addressShift;
+    QByteArray savedSettings = m_originalSettings;
+    QByteArray safetySettings = savedSettings;
+
+    // Byte 0 bằng 0: firmware chưa được xác nhận hoàn chỉnh.
+    safetySettings[0] = char(0);
+    QByteArray readBack;
+    emit firmwareProgress(1,QStringLiteral("Đang bật khóa an toàn EEPROM..."));
+    if (!writeMemory(eepromPhysical,safetySettings,error)|| !readMemory(eepromPhysical,safetySettings.size(),readBack,error)|| readBack != safetySettings) {
+    if (error.isEmpty()) {error = QStringLiteral("Không xác nhận được khóa an toàn EEPROM.");}
+    const QString message =
+        QStringLiteral("Dừng nạp firmware: %1").arg(error);
+        emit logMessage(message);
+        emit firmwareFinished(false, message);
+        closePort();
+        setBusy(false);
+        return;
+    }
+    const int blockSize = 128;
+    for (int offset = 0;
+         offset < firmware.size();
+         offset += blockSize) {
+        const QByteArray block =firmware.mid(offset, blockSize);
+        bool verified = false;
+        QString blockError;
+        for (int attempt = 1;
+             attempt <= 3;
+             ++attempt) {
+            QByteArray verify;
+            if (writeMemory(physicalStart + quint32(offset),block,blockError)&& readMemory(physicalStart + quint32(offset),block.size(),verify,blockError)&& verify == block) {
+                verified = true;
+                break;
+            }
+            if (verify.size() == block.size()&& verify != block) {blockError =QStringLiteral("Dữ liệu đọc lại không khớp.");
+            }
+        }
+        if (!verified) {const QString message =QStringLiteral("Nạp thất bại tại địa chỉ 0x%1: %2").arg(physicalStart+ quint32(offset),0,16).arg(blockError);
+            emit logMessage(message);
+            emit firmwareFinished(false, message);
+            // Giữ byte an toàn bằng 0.
+            closePort();
+            setBusy(false);
+            return;
+        }
+        const int completed =offset + block.size();
+        const int percent =5 + (completed * 90)/ firmware.size();
+        emit firmwareProgress(percent,QStringLiteral("Đang nạp firmware: %1%").arg(percent));
+    }
+
+    // Chỉ khôi phục byte 0 sau khi toàn bộ firmware đã được kiểm tra.
+    savedSettings[0] = char(1);
+    readBack.clear();
+    emit firmwareProgress(97,QStringLiteral("Đang khôi phục cấu hình ESC..."));
+
+    if (!writeMemory(eepromPhysical,savedSettings,error)|| !readMemory(eepromPhysical,savedSettings.size(),readBack,error)|| readBack != savedSettings) {
+
+        if (error.isEmpty()) {error = QStringLiteral("EEPROM đọc lại không khớp.");
+        }
+
+        const QString message =QStringLiteral("Firmware đã ghi nhưng chưa xác nhận được EEPROM: %1").arg(error);
+        emit logMessage(message);
+        emit firmwareFinished(false, message);
+        closePort();
+        setBusy(false);
+        return;
+    }
+
+    emit firmwareProgress(100,QStringLiteral("Nạp và kiểm tra firmware hoàn tất."));
+    QString resetError;
+    if (m_mode == 0) {
+        QByteArray resetPacket(4, char(0));
+        sendPacket(resetPacket, resetError);
+    } else {
+        QByteArray ignored;
+        exchangeFourWay(m_fourway.makeFourWayCommand(0x35,quint8(m_channel)),ignored,resetError,700);
+        // Không gửi lệnh thoát 4way lần nữa sau reset.
+        m_fourWayActive = false;
+    }
+
+    if (!resetError.isEmpty()) {emit logMessage(QStringLiteral("Firmware đã nạp; ESC có thể cần ngắt và cấp lại nguồn: %1").arg(resetError));
+    }
+
+    emit firmwareFinished(true,QStringLiteral("Đã nạp và kiểm tra firmware thành công."));
+
+    closePort();
     setBusy(false);
 }

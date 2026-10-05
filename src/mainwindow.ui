@@ -2,98 +2,1594 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
-  <property name="geometry"><rect><x>0</x><y>0</y><width>920</width><height>790</height></rect></property>
-  <property name="minimumSize"><size><width>820</width><height>720</height></size></property>
-  <property name="windowTitle"><string>Basic ESC Config — v0.1</string></property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1360</width>
+    <height>900</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1024</width>
+    <height>700</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>ESC Config</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow, QWidget#centralWidget { background: #f4f7fb; color: #1f2937; }
+QWidget { font-family: &quot;Segoe UI&quot;; font-size: 10pt; }
+QFrame#headerFrame { background: #172033; border-radius: 10px; }
+QLabel#titleLabel { color: white; font-size: 20pt; font-weight: 700; }
+QLabel#subtitleLabel { color: #a9b7cf; }
+QGroupBox { background: white; border: 1px solid #dce3ed; border-radius: 8px; margin-top: 12px; padding-top: 9px; font-weight: 600; }
+QGroupBox::title { subcontrol-origin: margin; left: 12px; padding: 0 5px; color: #334155; }
+QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox, QPlainTextEdit { background: white; border: 1px solid #cbd5e1; border-radius: 5px; padding: 4px 7px; selection-background-color: #2563eb; }
+QLineEdit:focus, QComboBox:focus, QSpinBox:focus, QDoubleSpinBox:focus { border: 1px solid #2563eb; }
+QPushButton { min-height: 27px; padding: 3px 12px; border: 1px solid #cbd5e1; border-radius: 5px; background: #ffffff; }
+QPushButton:hover { background: #eef4ff; border-color: #8fb3f4; }
+QPushButton:pressed { background: #dce9ff; }
+QPushButton:disabled { color: #94a3b8; background: #f1f5f9; }
+QPushButton#connectButton, QPushButton#writeButton, QPushButton#flashFirmwareButton { color: white; background: #2563eb; border-color: #2563eb; font-weight: 600; }
+QPushButton#connectButton:hover, QPushButton#writeButton:hover, QPushButton#flashFirmwareButton:hover { background: #1d4ed8; }
+QLabel#linkLabel { color: #047857; font-weight: 600; }
+QLabel#deviceLabel { color: #334155; background: #eaf1fb; border-radius: 5px; padding: 5px 9px; }
+QLabel#settingsHint { color: #1e40af; background: #eaf2ff; border: 1px solid #c7dcff; border-radius: 6px; padding: 7px 10px; }
+QLabel#dirtyLabel { color: #475569; font-weight: 600; }
+QTabWidget::pane { border: 1px solid #d8e0eb; background: white; top: -1px; }
+QTabBar::tab { background: #e8edf5; border: 1px solid #d8e0eb; padding: 8px 18px; margin-right: 2px; }
+QTabBar::tab:selected { background: white; color: #1d4ed8; font-weight: 600; border-bottom-color: white; }
+QProgressBar { border: 1px solid #cbd5e1; border-radius: 5px; background: #eef2f7; text-align: center; }
+QProgressBar::chunk { background: #22c55e; border-radius: 4px; }
+QScrollArea { border: none; background: white; }
+QScrollArea &gt; QWidget &gt; QWidget { background: white; }
+QPlainTextEdit#logView, QPlainTextEdit#rawView { font-family: &quot;Consolas&quot;; font-size: 9pt; }</string>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="mainLayout">
-    <property name="spacing"><number>12</number></property>
-    <property name="leftMargin"><number>20</number></property>
-    <property name="topMargin"><number>16</number></property>
-    <property name="rightMargin"><number>20</number></property>
-    <property name="bottomMargin"><number>12</number></property>
-    <item><layout class="QHBoxLayout" name="titleLayout">
-     <item><widget class="QLabel" name="titleLabel"><property name="font"><font><pointsize>19</pointsize><weight>75</weight><bold>true</bold></font></property><property name="text"><string>Basic ESC Config</string></property></widget></item>
-     <item><spacer name="titleSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
-     <item><widget class="QPushButton" name="demoButton"><property name="text"><string>Xem thử giao diện</string></property><property name="toolTip"><string>Dùng dữ liệu mẫu, không mở cổng COM.</string></property></widget></item>
-    </layout></item>
-    <item><widget class="QLabel" name="subtitleLabel"><property name="text"><string>Công cụ cấu hình một ESC • Bản cơ bản 0.1</string></property></widget></item>
-    <item><widget class="QGroupBox" name="connectionGroup"><property name="title"><string>Kết nối thiết bị</string></property>
-     <layout class="QGridLayout" name="connectionLayout">
-      <item row="0" column="0"><widget class="QLabel" name="portLabel"><property name="text"><string>Cổng COM</string></property><property name="buddy"><cstring>portCombo</cstring></property></widget></item>
-      <item row="0" column="1"><widget class="QComboBox" name="portCombo"><property name="minimumSize"><size><width>200</width><height>0</height></size></property></widget></item>
-      <item row="0" column="2"><widget class="QPushButton" name="refreshButton"><property name="text"><string>Quét lại</string></property></widget></item>
-      <item row="0" column="3" rowspan="2"><widget class="QPushButton" name="connectButton"><property name="minimumSize"><size><width>130</width><height>65</height></size></property><property name="text"><string>Kết nối</string></property></widget></item>
-      <item row="1" column="0"><widget class="QLabel" name="modeLabel"><property name="text"><string>Giao tiếp</string></property><property name="buddy"><cstring>modeCombo</cstring></property></widget></item>
-      <item row="1" column="1" colspan="2"><widget class="QComboBox" name="modeCombo">
-       <item><property name="text"><string>Direct Bootloader · 19200 baud</string></property></item>
-       <item><property name="text"><string>4way qua FC (MSP) · 115200 baud</string></property></item>
-       <item><property name="text"><string>Adapter đã ở chế độ 4way · 115200 baud</string></property></item>
-      </widget></item>
-      <item row="2" column="0"><widget class="QLabel" name="channelLabel"><property name="text"><string>Kênh ESC</string></property><property name="buddy"><cstring>channelSpin</cstring></property></widget></item>
-      <item row="2" column="1"><widget class="QSpinBox" name="channelSpin"><property name="minimum"><number>1</number></property><property name="maximum"><number>8</number></property><property name="toolTip"><string>ESC 1 tương ứng kênh 0 của giao thức 4way.</string></property></widget></item>
-      <item row="2" column="2" colspan="2"><widget class="QLabel" name="linkLabel"><property name="text"><string>Chưa kết nối</string></property></widget></item>
+    <property name="spacing">
+     <number>8</number>
+    </property>
+    <property name="leftMargin">
+     <number>14</number>
+    </property>
+    <property name="topMargin">
+     <number>12</number>
+    </property>
+    <property name="rightMargin">
+     <number>14</number>
+    </property>
+    <property name="bottomMargin">
+     <number>10</number>
+    </property>
+    <item>
+     <widget class="QFrame" name="headerFrame">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>58</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>58</height>
+       </size>
+      </property>
+      <layout class="QHBoxLayout" name="titleLayout">
+       <property name="leftMargin">
+        <number>16</number>
+       </property>
+       <property name="rightMargin">
+        <number>12</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="titleLabel">
+         <property name="text">
+          <string>ESC Config</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="subtitleLabel">
+         <property name="text">
+          <string>Cấu hình, sao lưu và cập nhật firmware</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="titleSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="demoButton">
+         <property name="toolTip">
+          <string>Dùng dữ liệu mẫu, không mở cổng COM.</string>
+         </property>
+         <property name="text">
+          <string>Xem thử giao diện</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="connectionGroup">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>112</height>
+       </size>
+      </property>
+      <property name="title">
+       <string>Kết nối</string>
+      </property>
+      <layout class="QGridLayout" name="connectionLayout">
+       <property name="leftMargin">
+        <number>10</number>
+       </property>
+       <property name="topMargin">
+        <number>8</number>
+       </property>
+       <property name="rightMargin">
+        <number>10</number>
+       </property>
+       <property name="bottomMargin">
+        <number>8</number>
+       </property>
+       <property name="horizontalSpacing">
+        <number>8</number>
+       </property>
+       <property name="verticalSpacing">
+        <number>5</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="QLabel" name="portLabel">
+         <property name="text">
+          <string>Cổng</string>
+         </property>
+         <property name="buddy">
+          <cstring>portCombo</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="portCombo">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>260</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="refreshButton">
+         <property name="maximumSize">
+          <size>
+           <width>86</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Quét lại</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="modeLabel">
+         <property name="text">
+          <string>Giao tiếp</string>
+         </property>
+         <property name="buddy">
+          <cstring>modeCombo</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QComboBox" name="modeCombo">
+         <property name="minimumSize">
+          <size>
+           <width>300</width>
+           <height>0</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>Direct Bootloader · 19200 baud (CH340, CP2102)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ESP Caple or FC/MSP · 115200 baud</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="0" column="5">
+        <widget class="QLabel" name="channelLabel">
+         <property name="text">
+          <string>Kênh</string>
+         </property>
+         <property name="buddy">
+          <cstring>channelSpin</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="6">
+        <widget class="QSpinBox" name="channelSpin">
+         <property name="maximumSize">
+          <size>
+           <width>64</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>ESC 1 tương ứng kênh 0 của giao thức 4way.</string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>8</number>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="7" rowspan="2">
+        <widget class="QPushButton" name="connectButton">
+         <property name="minimumSize">
+          <size>
+           <width>108</width>
+           <height>35</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>125</width>
+           <height>54</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Kết nối</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QLabel" name="linkLabel">
+         <property name="text">
+          <string>● Chưa kết nối</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2" colspan="5">
+        <widget class="QLabel" name="deviceLabel">
+         <property name="text">
+          <string>Thiết bị: —     Firmware: —     EEPROM: —</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="8">
+        <spacer name="connectionSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTabWidget" name="tabs">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QTabBar::tab {
+    min-width: 135px;
+    min-height: 26px;
+    padding: 7px 20px;
+}</string>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="settingsTab">
+       <attribute name="title">
+        <string>Cấu hình</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="settingsTabLayout">
+        <property name="spacing">
+         <number>8</number>
+        </property>
+        <property name="leftMargin">
+         <number>10</number>
+        </property>
+        <property name="topMargin">
+         <number>10</number>
+        </property>
+        <property name="rightMargin">
+         <number>10</number>
+        </property>
+        <property name="bottomMargin">
+         <number>10</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="settingsHint">
+          <property name="text">
+           <string>Kết nối và đọc ESC để chỉnh thông số, hoặc chọn “Xem thử giao diện”.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QScrollArea" name="settingsScrollArea">
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="settingsScrollContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>1293</width>
+             <height>999</height>
+            </rect>
+           </property>
+           <layout class="QGridLayout" name="settingsGrid">
+            <property name="leftMargin">
+             <number>4</number>
+            </property>
+            <property name="topMargin">
+             <number>4</number>
+            </property>
+            <property name="rightMargin">
+             <number>4</number>
+            </property>
+            <property name="bottomMargin">
+             <number>4</number>
+            </property>
+            <property name="spacing">
+             <number>10</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QGroupBox" name="motorGroup">
+              <property name="title">
+               <string>Động cơ và công suất</string>
+              </property>
+              <layout class="QVBoxLayout" name="motorGroupLayout">
+               <property name="spacing">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QGroupBox" name="motorElectricalGroup">
+                 <property name="title">
+                  <string>Điều khiển động cơ</string>
+                 </property>
+                 <layout class="QFormLayout" name="motorForm">
+                  <property name="fieldGrowthPolicy">
+                   <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                  </property>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="pwmLabel">
+                    <property name="text">
+                     <string>Tần số PWM</string>
+                    </property>
+                    <property name="buddy">
+                     <cstring>pwmSpin</cstring>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QSpinBox" name="pwmSpin">
+                    <property name="suffix">
+                     <string> kHz</string>
+                    </property>
+                    <property name="minimum">
+                     <number>8</number>
+                    </property>
+                    <property name="maximum">
+                     <number>144</number>
+                    </property>
+                    <property name="value">
+                     <number>24</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="pwmModeLabel">
+                    <property name="text">
+                     <string>Chế độ PWM</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QComboBox" name="pwmModeCombo">
+                    <item>
+                     <property name="text">
+                      <string>Cố định</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Biến thiên</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Tự động</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="timingLabel">
+                    <property name="text">
+                     <string>Góc timing</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QDoubleSpinBox" name="timingSpin">
+                    <property name="suffix">
+                     <string>°</string>
+                    </property>
+                    <property name="decimals">
+                     <number>1</number>
+                    </property>
+                    <property name="maximum">
+                     <double>30.000000000000000</double>
+                    </property>
+                    <property name="singleStep">
+                     <double>0.900000000000000</double>
+                    </property>
+                    <property name="value">
+                     <double>15.000000000000000</double>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="polesLabel">
+                    <property name="text">
+                     <string>Số cực động cơ</string>
+                    </property>
+                    <property name="buddy">
+                     <cstring>polesSpin</cstring>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QSpinBox" name="polesSpin">
+                    <property name="minimum">
+                     <number>2</number>
+                    </property>
+                    <property name="maximum">
+                     <number>32</number>
+                    </property>
+                    <property name="singleStep">
+                     <number>2</number>
+                    </property>
+                    <property name="value">
+                     <number>14</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="motorKvLabel">
+                    <property name="text">
+                     <string>KV động cơ</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QSpinBox" name="motorKvSpin">
+                    <property name="suffix">
+                     <string> KV</string>
+                    </property>
+                    <property name="minimum">
+                     <number>20</number>
+                    </property>
+                    <property name="maximum">
+                     <number>10220</number>
+                    </property>
+                    <property name="singleStep">
+                     <number>40</number>
+                    </property>
+                    <property name="value">
+                     <number>980</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="0" colspan="2">
+                   <widget class="QCheckBox" name="compPwmCheck">
+                    <property name="text">
+                     <string>Complementary PWM</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="0" colspan="2">
+                   <widget class="QCheckBox" name="autoTimingCheck">
+                    <property name="text">
+                     <string>Tự động điều chỉnh timing</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="startupGroup">
+                 <property name="title">
+                  <string>Khởi động</string>
+                 </property>
+                 <layout class="QFormLayout" name="startupForm">
+                  <property name="fieldGrowthPolicy">
+                   <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                  </property>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="startupLabel">
+                    <property name="text">
+                     <string>Công suất khởi động</string>
+                    </property>
+                    <property name="buddy">
+                     <cstring>startupSpin</cstring>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QSpinBox" name="startupSpin">
+                    <property name="suffix">
+                     <string> %</string>
+                    </property>
+                    <property name="minimum">
+                     <number>50</number>
+                    </property>
+                    <property name="maximum">
+                     <number>150</number>
+                    </property>
+                    <property name="value">
+                     <number>100</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="rampLabel">
+                    <property name="text">
+                     <string>Tốc độ tăng ga</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QDoubleSpinBox" name="rampSpin">
+                    <property name="suffix">
+                     <string> %/ms</string>
+                    </property>
+                    <property name="decimals">
+                     <number>1</number>
+                    </property>
+                    <property name="minimum">
+                     <double>0.100000000000000</double>
+                    </property>
+                    <property name="maximum">
+                     <double>25.500000000000000</double>
+                    </property>
+                    <property name="singleStep">
+                     <double>0.100000000000000</double>
+                    </property>
+                    <property name="value">
+                     <double>3.000000000000000</double>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="minimumDutyLabel">
+                    <property name="text">
+                     <string>Duty nhỏ nhất</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QDoubleSpinBox" name="minimumDutySpin">
+                    <property name="suffix">
+                     <string> %</string>
+                    </property>
+                    <property name="decimals">
+                     <number>1</number>
+                    </property>
+                    <property name="minimum">
+                     <double>0.200000000000000</double>
+                    </property>
+                    <property name="maximum">
+                     <double>51.000000000000000</double>
+                    </property>
+                    <property name="singleStep">
+                     <double>0.200000000000000</double>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0" colspan="2">
+                   <widget class="QCheckBox" name="stuckRotorCheck">
+                    <property name="text">
+                     <string>Bảo vệ kẹt rotor</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0" colspan="2">
+                   <widget class="QCheckBox" name="stallProtectionCheck">
+                    <property name="text">
+                     <string>Bảo vệ mất đồng bộ</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="directionGroup">
+                 <property name="title">
+                  <string>Chiều quay và Hall</string>
+                 </property>
+                 <layout class="QFormLayout" name="directionForm">
+                  <property name="fieldGrowthPolicy">
+                   <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                  </property>
+                  <item row="0" column="0" colspan="2">
+                   <widget class="QCheckBox" name="reverseCheck">
+                    <property name="text">
+                     <string>Đảo chiều quay</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0" colspan="2">
+                   <widget class="QCheckBox" name="bidirectionalCheck">
+                    <property name="text">
+                     <string>Chế độ hai chiều</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0" colspan="2">
+                   <widget class="QCheckBox" name="rcCarReverseCheck">
+                    <property name="text">
+                     <string>Đảo chiều kiểu xe RC</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="hallModeLabel">
+                    <property name="text">
+                     <string>Cảm biến Hall</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QComboBox" name="hallModeCombo">
+                    <item>
+                     <property name="text">
+                      <string>Tắt</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Bật Hall</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Hiệu chuẩn Hall</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QGroupBox" name="behaviorGroup">
+              <property name="title">
+               <string>Phanh, tín hiệu và bảo vệ</string>
+              </property>
+              <layout class="QVBoxLayout" name="behaviorGroupLayout">
+               <property name="spacing">
+                <number>8</number>
+               </property>
+               <item>
+                <widget class="QGroupBox" name="brakeSettingsGroup">
+                 <property name="title">
+                  <string>Phanh</string>
+                 </property>
+                 <layout class="QFormLayout" name="behaviorForm">
+                  <property name="fieldGrowthPolicy">
+                   <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                  </property>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="brakeLabel">
+                    <property name="text">
+                     <string>Chế độ phanh</string>
+                    </property>
+                    <property name="buddy">
+                     <cstring>brakeCombo</cstring>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QComboBox" name="brakeCombo">
+                    <item>
+                     <property name="text">
+                      <string>Tắt</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Phanh khi dừng</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Phanh chủ động</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="activeBrakePowerLabel">
+                    <property name="text">
+                     <string>Công suất phanh chủ động</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QSpinBox" name="activeBrakePowerSpin">
+                    <property name="suffix">
+                     <string> %</string>
+                    </property>
+                    <property name="maximum">
+                     <number>5</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="dragBrakeLabel">
+                    <property name="text">
+                     <string>Drag brake</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QSpinBox" name="dragBrakeSpin">
+                    <property name="suffix">
+                     <string> / 10</string>
+                    </property>
+                    <property name="minimum">
+                     <number>1</number>
+                    </property>
+                    <property name="maximum">
+                     <number>10</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="drivingBrakeLabel">
+                    <property name="text">
+                     <string>Phanh khi chạy</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QSpinBox" name="drivingBrakeSpin">
+                    <property name="suffix">
+                     <string> / 10</string>
+                    </property>
+                    <property name="minimum">
+                     <number>1</number>
+                    </property>
+                    <property name="maximum">
+                     <number>10</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="beepLabel">
+                    <property name="text">
+                     <string>Âm lượng bíp</string>
+                    </property>
+                    <property name="buddy">
+                     <cstring>beepSpin</cstring>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QSpinBox" name="beepSpin">
+                    <property name="maximum">
+                     <number>11</number>
+                    </property>
+                    <property name="value">
+                     <number>5</number>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="sineGroup">
+                 <property name="title">
+                  <string>Khởi động sine</string>
+                 </property>
+                 <layout class="QFormLayout" name="sineForm">
+                  <property name="fieldGrowthPolicy">
+                   <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                  </property>
+                  <item row="0" column="0" colspan="2">
+                   <widget class="QCheckBox" name="sineCheck">
+                    <property name="text">
+                     <string>Khởi động dạng sine</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="sineChangeoverLabel">
+                    <property name="text">
+                     <string>Mức chuyển chế độ</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QSpinBox" name="sineChangeoverSpin">
+                    <property name="suffix">
+                     <string> %</string>
+                    </property>
+                    <property name="minimum">
+                     <number>5</number>
+                    </property>
+                    <property name="maximum">
+                     <number>25</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="sinePowerLabel">
+                    <property name="text">
+                     <string>Công suất sine</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QSpinBox" name="sinePowerSpin">
+                    <property name="suffix">
+                     <string> / 10</string>
+                    </property>
+                    <property name="minimum">
+                     <number>1</number>
+                    </property>
+                    <property name="maximum">
+                     <number>10</number>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="inputGroup">
+                 <property name="title">
+                  <string>Tín hiệu điều khiển</string>
+                 </property>
+                 <layout class="QFormLayout" name="inputForm">
+                  <property name="fieldGrowthPolicy">
+                   <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                  </property>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="inputTypeLabel">
+                    <property name="text">
+                     <string>Loại tín hiệu</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QComboBox" name="inputTypeCombo">
+                    <item>
+                     <property name="text">
+                      <string>Tự động</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>DShot</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Servo PWM</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Serial</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Betaflight Safe Arming</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>DroneCAN</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="1" column="0" colspan="2">
+                   <widget class="QCheckBox" name="disableCalibrationCheck">
+                    <property name="text">
+                     <string>Tắt hiệu chuẩn tay ga</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0" colspan="2">
+                   <widget class="QCheckBox" name="telemetryIntervalCheck">
+                    <property name="text">
+                     <string>Telemetry theo chu kỳ</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="servoLowLabel">
+                    <property name="text">
+                     <string>Servo thấp</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QSpinBox" name="servoLowSpin">
+                    <property name="suffix">
+                     <string> µs</string>
+                    </property>
+                    <property name="minimum">
+                     <number>750</number>
+                    </property>
+                    <property name="maximum">
+                     <number>1260</number>
+                    </property>
+                    <property name="value">
+                     <number>1100</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="servoNeutralLabel">
+                    <property name="text">
+                     <string>Servo trung tâm</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QSpinBox" name="servoNeutralSpin">
+                    <property name="suffix">
+                     <string> µs</string>
+                    </property>
+                    <property name="minimum">
+                     <number>1374</number>
+                    </property>
+                    <property name="maximum">
+                     <number>1629</number>
+                    </property>
+                    <property name="value">
+                     <number>1500</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="0">
+                   <widget class="QLabel" name="servoHighLabel">
+                    <property name="text">
+                     <string>Servo cao</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="1">
+                   <widget class="QSpinBox" name="servoHighSpin">
+                    <property name="suffix">
+                     <string> µs</string>
+                    </property>
+                    <property name="minimum">
+                     <number>1750</number>
+                    </property>
+                    <property name="maximum">
+                     <number>2260</number>
+                    </property>
+                    <property name="value">
+                     <number>1900</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="0">
+                   <widget class="QLabel" name="servoDeadBandLabel">
+                    <property name="text">
+                     <string>Vùng chết</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="1">
+                   <widget class="QSpinBox" name="servoDeadBandSpin">
+                    <property name="suffix">
+                     <string> µs</string>
+                    </property>
+                    <property name="maximum">
+                     <number>255</number>
+                    </property>
+                    <property name="value">
+                     <number>30</number>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QGroupBox" name="protectionGroup">
+              <property name="title">
+               <string>Điện áp, dòng điện và nhiệt độ</string>
+              </property>
+              <layout class="QFormLayout" name="protectionForm">
+               <property name="fieldGrowthPolicy">
+                <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+               </property>
+               <item row="0" column="0">
+                <widget class="QLabel" name="voltageModeLabel">
+                 <property name="text">
+                  <string>Bảo vệ điện áp thấp</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QComboBox" name="voltageModeCombo">
+                 <item>
+                  <property name="text">
+                   <string>Tắt</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Theo điện áp cell</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Theo điện áp tổng</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="cellVoltageLabel">
+                 <property name="text">
+                  <string>Ngưỡng mỗi cell</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QDoubleSpinBox" name="cellVoltageSpin">
+                 <property name="suffix">
+                  <string> V</string>
+                 </property>
+                 <property name="decimals">
+                  <number>2</number>
+                 </property>
+                 <property name="minimum">
+                  <double>2.500000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>5.050000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.050000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>3.200000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="absoluteVoltageLabel">
+                 <property name="text">
+                  <string>Ngưỡng điện áp tổng</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="absoluteVoltageSpin">
+                 <property name="suffix">
+                  <string> V</string>
+                 </property>
+                 <property name="decimals">
+                  <number>1</number>
+                 </property>
+                 <property name="maximum">
+                  <double>50.000000000000000</double>
+                 </property>
+                 <property name="singleStep">
+                  <double>0.500000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QCheckBox" name="temperatureLimitCheck">
+                 <property name="text">
+                  <string>Giới hạn nhiệt độ</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QSpinBox" name="temperatureSpin">
+                 <property name="suffix">
+                  <string> °C</string>
+                 </property>
+                 <property name="minimum">
+                  <number>70</number>
+                 </property>
+                 <property name="maximum">
+                  <number>140</number>
+                 </property>
+                 <property name="value">
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QCheckBox" name="currentLimitCheck">
+                 <property name="text">
+                  <string>Giới hạn dòng điện</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QSpinBox" name="currentLimitSpin">
+                 <property name="suffix">
+                  <string> A</string>
+                 </property>
+                 <property name="minimum">
+                  <number>2</number>
+                 </property>
+                 <property name="maximum">
+                  <number>200</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>2</number>
+                 </property>
+                 <property name="value">
+                  <number>60</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QLabel" name="currentPLabel">
+                 <property name="text">
+                  <string>Current PID — P</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <widget class="QSpinBox" name="currentPSpin">
+                 <property name="maximum">
+                  <number>510</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="currentILabel">
+                 <property name="text">
+                  <string>Current PID — I</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="1">
+                <widget class="QSpinBox" name="currentISpin">
+                 <property name="maximum">
+                  <number>255</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="currentDLabel">
+                 <property name="text">
+                  <string>Current PID — D</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="1">
+                <widget class="QSpinBox" name="currentDSpin">
+                 <property name="maximum">
+                  <number>510</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QGroupBox" name="advancedGroup">
+              <property name="title">
+               <string>Thông tin và tùy chọn nâng cao</string>
+              </property>
+              <layout class="QVBoxLayout" name="advancedLayout">
+               <item>
+                <widget class="QLabel" name="advancedInfoLabel">
+                 <property name="text">
+                  <string>Các giá trị được đọc trực tiếp từ EEPROM AM32. Hãy sao lưu trước khi ghi cấu hình mới.</string>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="offsetInfoLabel">
+                 <property name="text">
+                  <string>Vùng cấu hình chuẩn: byte 0–47 • Tune: 48–175 • CAN/Hall: 176–191</string>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="advancedSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="settingsActionsFrame">
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <layout class="QHBoxLayout" name="actionsLayout">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QPushButton" name="readButton">
+             <property name="text">
+              <string>Đọc ESC</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="revertButton">
+             <property name="text">
+              <string>Hoàn tác sửa</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="exportButton">
+             <property name="text">
+              <string>Sao lưu bản đã đọc…</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="actionsSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="dirtyLabel">
+             <property name="text">
+              <string>Chưa có dữ liệu</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="writeButton">
+             <property name="minimumSize">
+              <size>
+               <width>112</width>
+               <height>35</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Ghi ESC</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="firmwaretab">
+       <attribute name="title">
+        <string>Firmware ESC</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="firmwareTabLayout">
+        <property name="leftMargin">
+         <number>16</number>
+        </property>
+        <property name="topMargin">
+         <number>16</number>
+        </property>
+        <property name="rightMargin">
+         <number>16</number>
+        </property>
+        <property name="bottomMargin">
+         <number>16</number>
+        </property>
+        <item>
+         <widget class="QGroupBox" name="firmwareGroup">
+          <property name="title">
+           <string>Nạp firmware từ Intel HEX</string>
+          </property>
+          <layout class="QGridLayout" name="firmwareLayout">
+           <item row="0" column="0">
+            <widget class="QLabel" name="FmwareTitleLable">
+             <property name="text">
+              <string>File firmware</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="firmwarePathEdit">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+             <property name="placeholderText">
+              <string>Chưa chọn file .hex</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="selectFirmwareButton">
+             <property name="text">
+              <string>Chọn file HEX…</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="firmwareInfoTitle">
+             <property name="text">
+              <string>Thông tin</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1" colspan="2">
+            <widget class="QLabel" name="firmwareInfoLabel">
+             <property name="text">
+              <string>Chưa chọn firmware</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="firmwareStateTitle">
+             <property name="text">
+              <string>Trạng thái</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1" colspan="2">
+            <widget class="QLabel" name="firmwareStatusLabel">
+             <property name="text">
+              <string>Sẵn sàng</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0" colspan="3">
+            <widget class="QProgressBar" name="firmwareProgressBar">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>26</height>
+              </size>
+             </property>
+             <property name="value">
+              <number>0</number>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0" colspan="2">
+            <widget class="QLabel" name="firmwareWarningLabel">
+             <property name="text">
+              <string>Không ngắt nguồn hoặc cáp USB trong khi nạp firmware.</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="2">
+            <widget class="QPushButton" name="flashFirmwareButton">
+             <property name="minimumSize">
+              <size>
+               <width>140</width>
+               <height>35</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Nạp firmware</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <spacer name="firmwareSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>250</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="rawTab">
+       <attribute name="title">
+        <string>Dữ liệu EEPROM</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="rawLayout">
+        <item>
+         <widget class="QLabel" name="rawHint">
+          <property name="text">
+           <string>Dữ liệu EEPROM hiện tại. Các chỉnh sửa chưa được gửi cho đến khi bạn bấm “Ghi ESC”.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPlainTextEdit" name="rawView">
+          <property name="lineWrapMode">
+           <enum>QPlainTextEdit::NoWrap</enum>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="logTitleLayout">
+      <item>
+       <widget class="QLabel" name="logLabel">
+        <property name="text">
+         <string>Nhật ký hoạt động</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="logSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="clearLogButton">
+        <property name="maximumSize">
+         <size>
+          <width>110</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Xóa nhật ký</string>
+        </property>
+       </widget>
+      </item>
      </layout>
-    </widget></item>
-    <item><widget class="QLabel" name="deviceLabel"><property name="text"><string>Thiết bị: —     Firmware: —     EEPROM: —</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
-    <item><widget class="QTabWidget" name="tabs"><property name="currentIndex"><number>0</number></property>
-     <widget class="QWidget" name="settingsTab"><attribute name="title"><string>Cấu hình cơ bản</string></attribute>
-      <layout class="QVBoxLayout" name="settingsTabLayout">
-       <property name="spacing"><number>12</number></property>
-       <item><widget class="QLabel" name="settingsHint"><property name="text"><string>Kết nối và đọc ESC để chỉnh thông số, hoặc chọn “Xem thử giao diện”.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
-       <item><widget class="QWidget" name="settingsPanel"><layout class="QHBoxLayout" name="settingsColumns">
-        <property name="leftMargin"><number>0</number></property><property name="rightMargin"><number>0</number></property>
-        <item><widget class="QGroupBox" name="motorGroup"><property name="title"><string>Động cơ</string></property>
-         <layout class="QFormLayout" name="motorForm">
-          <item row="0" column="0"><widget class="QLabel" name="pwmLabel"><property name="text"><string>Tần số PWM</string></property><property name="buddy"><cstring>pwmSpin</cstring></property></widget></item>
-          <item row="0" column="1"><widget class="QSpinBox" name="pwmSpin"><property name="minimum"><number>1</number></property><property name="maximum"><number>255</number></property><property name="suffix"><string> kHz</string></property><property name="value"><number>24</number></property></widget></item>
-          <item row="1" column="0"><widget class="QLabel" name="startupLabel"><property name="text"><string>Công suất khởi động</string></property><property name="buddy"><cstring>startupSpin</cstring></property></widget></item>
-          <item row="1" column="1"><widget class="QSpinBox" name="startupSpin"><property name="maximum"><number>255</number></property><property name="suffix"><string> %</string></property><property name="value"><number>100</number></property></widget></item>
-          <item row="2" column="0"><widget class="QLabel" name="polesLabel"><property name="text"><string>Số cực động cơ</string></property><property name="buddy"><cstring>polesSpin</cstring></property></widget></item>
-          <item row="2" column="1"><widget class="QSpinBox" name="polesSpin"><property name="minimum"><number>1</number></property><property name="maximum"><number>255</number></property><property name="value"><number>14</number></property></widget></item>
-          <item row="3" column="0" colspan="2"><widget class="QCheckBox" name="reverseCheck"><property name="text"><string>Đảo chiều quay</string></property></widget></item>
-          <item row="4" column="0" colspan="2"><widget class="QCheckBox" name="bidirectionalCheck"><property name="text"><string>Chế độ hai chiều</string></property></widget></item>
-         </layout>
-        </widget></item>
-        <item><widget class="QGroupBox" name="behaviorGroup"><property name="title"><string>Khởi động và phanh</string></property>
-         <layout class="QFormLayout" name="behaviorForm">
-          <item row="0" column="0" colspan="2"><widget class="QCheckBox" name="sineCheck"><property name="text"><string>Khởi động dạng sine</string></property></widget></item>
-          <item row="1" column="0"><widget class="QLabel" name="brakeLabel"><property name="text"><string>Chế độ phanh</string></property><property name="buddy"><cstring>brakeCombo</cstring></property></widget></item>
-          <item row="1" column="1"><widget class="QComboBox" name="brakeCombo">
-           <item><property name="text"><string>Tắt</string></property></item>
-           <item><property name="text"><string>Phanh khi dừng</string></property></item>
-           <item><property name="text"><string>Phanh chủ động</string></property></item>
-          </widget></item>
-          <item row="2" column="0"><widget class="QLabel" name="beepLabel"><property name="text"><string>Âm lượng bíp</string></property><property name="buddy"><cstring>beepSpin</cstring></property></widget></item>
-          <item row="2" column="1"><widget class="QSpinBox" name="beepSpin"><property name="maximum"><number>11</number></property><property name="value"><number>5</number></property></widget></item>
-          <item row="3" column="0" colspan="2"><widget class="QLabel" name="editNote"><property name="text"><string>Các thông số khác được giữ theo dữ liệu đọc từ ESC.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
-         </layout>
-        </widget></item>
-       </layout></widget></item>
-       <item><spacer name="settingsSpacer"><property name="orientation"><enum>Qt::Vertical</enum></property><property name="sizeHint" stdset="0"><size><width>20</width><height>5</height></size></property></spacer></item>
-      </layout>
+    </item>
+    <item>
+     <widget class="QPlainTextEdit" name="logView">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>88</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>125</height>
+       </size>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+      <property name="placeholderText">
+       <string>Thông tin kết nối và thao tác sẽ xuất hiện tại đây…</string>
+      </property>
      </widget>
-     <widget class="QWidget" name="rawTab"><attribute name="title"><string>Dữ liệu EEPROM</string></attribute>
-      <layout class="QVBoxLayout" name="rawLayout">
-       <item><widget class="QLabel" name="rawHint"><property name="text"><string>48 byte cấu hình hiện tại. Các chỉnh sửa trên giao diện chưa được ghi cho đến khi bạn bấm “Ghi ESC”.</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
-       <item><widget class="QPlainTextEdit" name="rawView"><property name="readOnly"><bool>true</bool></property><property name="lineWrapMode"><enum>QPlainTextEdit::NoWrap</enum></property></widget></item>
-      </layout>
-     </widget>
-    </widget></item>
-    <item><layout class="QHBoxLayout" name="actionsLayout">
-     <item><widget class="QPushButton" name="readButton"><property name="text"><string>Đọc ESC</string></property></widget></item>
-     <item><widget class="QPushButton" name="revertButton"><property name="text"><string>Hoàn tác sửa</string></property></widget></item>
-     <item><widget class="QPushButton" name="exportButton"><property name="text"><string>Sao lưu bản đã đọc…</string></property></widget></item>
-     <item><spacer name="actionsSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
-     <item><widget class="QLabel" name="dirtyLabel"><property name="text"><string>Chưa có dữ liệu</string></property></widget></item>
-     <item><widget class="QPushButton" name="writeButton"><property name="minimumSize"><size><width>115</width><height>32</height></size></property><property name="text"><string>Ghi ESC</string></property></widget></item>
-    </layout></item>
-    <item><layout class="QHBoxLayout" name="logTitleLayout">
-     <item><widget class="QLabel" name="logLabel"><property name="text"><string>Nhật ký</string></property></widget></item>
-     <item><spacer name="logSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
-     <item><widget class="QPushButton" name="clearLogButton"><property name="text"><string>Xóa nhật ký</string></property></widget></item>
-    </layout></item>
-    <item><widget class="QPlainTextEdit" name="logView"><property name="minimumSize"><size><width>0</width><height>90</height></size></property><property name="maximumSize"><size><width>16777215</width><height>140</height></size></property><property name="readOnly"><bool>true</bool></property></widget></item>
+    </item>
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>

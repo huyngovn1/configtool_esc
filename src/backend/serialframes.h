@@ -13,8 +13,7 @@ inline unsigned byte(const QByteArray &data, int index)
     return static_cast<unsigned char>(data.at(index));
 }
 
-inline Result stripOptionalEcho(QByteArray &bytes, const QByteArray &request,
-                                bool &handled, QString &error)
+inline Result stripOptionalEcho(QByteArray &bytes, const QByteArray &request,bool &handled, QString &error)
 {
     if (handled || bytes.isEmpty())
         return bytes.isEmpty() ? Result::NeedMore : Result::Complete;
@@ -31,8 +30,7 @@ inline Result stripOptionalEcho(QByteArray &bytes, const QByteArray &request,
     return Result::Complete;
 }
 
-inline Result takeFourWay(QByteArray &bytes, const QByteArray &request,
-                          bool &echoHandled, QByteArray &frame, QString &error)
+inline Result takeFourWay(QByteArray &bytes, const QByteArray &request,bool &echoHandled, QByteArray &frame, QString &error)
 {
     const Result echo = stripOptionalEcho(bytes, request, echoHandled, error);
     if (echo != Result::Complete)
@@ -52,8 +50,7 @@ inline Result takeFourWay(QByteArray &bytes, const QByteArray &request,
     return Result::Complete;
 }
 
-inline Result takeMsp(QByteArray &bytes, const QByteArray &request,
-                      bool &echoHandled, QByteArray &frame, QString &error)
+inline Result takeMsp(QByteArray &bytes, const QByteArray &request,bool &echoHandled, QByteArray &frame, QString &error)
 {
     const Result echo = stripOptionalEcho(bytes, request, echoHandled, error);
     if (echo != Result::Complete)
@@ -80,9 +77,7 @@ inline Result takeMsp(QByteArray &bytes, const QByteArray &request,
     return Result::Complete;
 }
 
-inline Result takeDirect(QByteArray &bytes, const QByteArray &request,
-                         int replySize, bool echoExpected,
-                         QByteArray &frame, QString &error)
+inline Result takeDirect(QByteArray &bytes, const QByteArray &request,int replySize, bool echoExpected,QByteArray &frame, QString &error)
 {
     const int prefixSize = echoExpected ? request.size() : 0;
     if (echoExpected) {

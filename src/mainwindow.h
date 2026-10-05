@@ -26,6 +26,8 @@ private:
     void readSettings();
     void writeSettings();
     void exportBackup();
+    void selectFirmware();
+    void flashFirmware();
     void loadSettings(const QByteArray &data);
     void editValue(int offset, int value);
     void updateControls();
@@ -44,5 +46,7 @@ private:
     bool m_demo = false;
     bool m_loading = false;
     bool m_dirty = false;
+    QByteArray m_firmwareHexText;
+    QString m_firmwarePath;
 };
 #endif
