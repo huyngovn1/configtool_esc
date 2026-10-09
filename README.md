@@ -4,6 +4,7 @@
 This project is based on and developed for the original open-source AM32 firmware. All credits for the original firmware, motor control algorithms, and related resources belong to the AM32 developers and contributors.
 
 **Original Source:** https://github.com/am32-firmware/AM32
+
 **Windows Configuration & Firmware Flashing Tool for AM32 ESCs**
 
 ESC Config is a Windows desktop application for configuring, managing, and updating AM32-based Electronic Speed Controllers (ESCs).
